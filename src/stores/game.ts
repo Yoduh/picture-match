@@ -17,26 +17,29 @@ export const useGameStore = defineStore('game', {
         this.guessedCards[0].id === this.guessedCards[1].matchId
       );
     },
+    score(): number {
+      return this.cards.filter((c) => c.isMatched).length / 2;
+    },
   },
   actions: {
     loadCards(cards: string[]) {
       const doubles = [];
-      let matchAdjust = cards.length;
-      const idAdjust = cards.length;
-      for (let j = 0; j < 2; j++) {
-        for (let i = 0; i < cards.length; i++) {
-          const idNum = i + idAdjust * j;
-          doubles.push({
-            id: idNum,
-            url: cards[i],
-            isGuessing: false,
-            isMatched: false,
-            matchId: idNum + matchAdjust,
-          });
-        }
-        matchAdjust *= -1;
+      for (let i = 0; i < cards.length * 2; i += 2) {
+        doubles.push({
+          id: i,
+          url: cards[i / 2],
+          isGuessing: false,
+          isMatched: false,
+          matchId: i + 1,
+        });
+        doubles.push({
+          id: i + 1,
+          url: cards[i / 2],
+          isGuessing: false,
+          isMatched: false,
+          matchId: i,
+        });
       }
-
       this.cards = shuffle(doubles);
     },
     keepCorrect() {
@@ -49,6 +52,11 @@ export const useGameStore = defineStore('game', {
     reverseIncorrect() {
       const guessedCards = this.guessedCards;
       guessedCards.forEach((c) => {
+        c.isGuessing = false;
+      });
+    },
+    resetGame() {
+      this.cards.forEach((c) => {
         c.isGuessing = false;
       });
     },

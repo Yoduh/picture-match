@@ -1,26 +1,53 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" />
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="leftDrawerOpen = !leftDrawerOpen"
+        />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-toolbar-title> Picture Matching Game </q-toolbar-title>
+        <div class="text-h4 col-grow">Score: {{ store.score }}</div>
+        <q-btn color="positive" class="q-mr-md" size="lg">New Game</q-btn>
+        <q-select
+          v-model="selection"
+          :options="categories"
+          outlined
+          class="q-my-sm"
+          bg-color="blue-3"
+        ></q-select>
       </q-toolbar>
     </q-header>
 
-    <!-- <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="leftDrawerOpen" bordered overlay>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item-label header> Settings </q-item-label>
+        <q-item>
+          <q-item-section>
+            Number of Cards: {{ cardCount }}
+            <q-slider
+              v-model="cardCount"
+              :min="2"
+              :max="24"
+              snap
+              label
+              color="light-green"
+            ></q-slider
+          ></q-item-section>
+        </q-item>
+        <q-item>
+          <q-btn color="warning">Restart</q-btn>
+          <div class="text-caption q-ml-md">
+            Reset current cards without shuffling
+          </div>
+        </q-item>
       </q-list>
-    </q-drawer> -->
+    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -28,4 +55,15 @@
   </q-layout>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useGameStore } from '@/stores/game';
+
+const store = useGameStore();
+
+const categories = ref(['Animals', 'Nature', 'Space']);
+const selection = ref('Animals');
+
+const leftDrawerOpen = ref(false);
+const cardCount = ref(12);
+</script>

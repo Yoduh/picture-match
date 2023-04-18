@@ -1,19 +1,29 @@
 <template>
-  <div class="image-wrapper q-ma-md row justify-center full-width full-height">
-    <q-img
-      v-if="!card.isGuessing && !card.isMatched"
-      :src="cardback"
-      class="image"
-      fit="contain"
-      @click="flipImage"
-    />
-    <q-img v-else :src="card.url" class="image" @click="flipImage" />
+  <div class="image-wrapper q-ma-sm row justify-center fit align-center">
+    <Transition name="flip" mode="out-in">
+      <q-img
+        v-if="!card.isGuessing && !card.isMatched"
+        :src="cardback"
+        class="image"
+        fit="contain"
+        loading="eager"
+        @click="flipImage" />
+      <q-img
+        v-else
+        :src="card.url"
+        fit="contain"
+        class="image"
+        loading="eager"
+        @click="flipImage"
+    /></Transition>
+    <Checkmark :show-icon="card.isMatched" class="checkmark" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import cardback from '@/assets/cardback.avif';
+import Checkmark from '@/components/Checkmark.vue';
 
 const props = defineProps({
   card: { type: Object as PropType<Card>, required: true },
@@ -31,7 +41,7 @@ function flipImage() {
 <style lang="scss" scoped>
 .image {
   cursor: pointer;
-  height: 20rem;
+  height: 100%;
   width: 10rem;
 }
 
@@ -42,18 +52,25 @@ function flipImage() {
   width: 300px;
   height: 400px;
 }
-// .image-wrapper .image {
-//   position: absolute;
-//   backface-visibility: hidden;
-//   transition: 1s;
-// }
-// .image-wrapper .image:nth-child(2) {
-//   transform: rotateY(180deg);
-// }
-// .image-wrapper:hover .image:nth-child(2) {
-//   transform: rotateY(0deg);
-// }
-// .image-wrapper:hover .image:nth-child(1) {
-//   transform: rotateY(-180deg);
-// }
+
+.flip-enter-active {
+  transition: all 0.2s ease-out;
+}
+
+.flip-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.flip-enter-from {
+  transform: rotateY(90deg);
+}
+.flip-leave-to {
+  transform: rotateY(-90deg);
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  text-shadow: 1px 1px 1px #5a5a5a;
+}
 </style>
