@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
+import animals from '@/assets/animals';
 
 export const useGameStore = defineStore('game', {
   state: () => ({
     cards: [] as Card[],
+    newGameFlag: false,
   }),
   getters: {
     guessedCards: (state) => {
@@ -59,6 +61,19 @@ export const useGameStore = defineStore('game', {
       this.cards.forEach((c) => {
         c.isGuessing = false;
       });
+    },
+    playAgain(deckSelection: string) {
+      this.newGameFlag = true;
+      switch (deckSelection) {
+        case 'animals': {
+          this.loadCards(animals);
+          return;
+        }
+        default: {
+          this.loadCards(animals);
+          return;
+        }
+      }
     },
   },
 });

@@ -13,7 +13,9 @@
 
         <q-toolbar-title> Picture Matching Game </q-toolbar-title>
         <div class="text-h4 col-grow">Score: {{ store.score }}</div>
-        <q-btn color="positive" class="q-mr-md" size="lg">New Game</q-btn>
+        <q-btn color="positive" class="q-mr-md" size="lg" @click="newGame"
+          >New Game</q-btn
+        >
         <q-select
           v-model="selection"
           :options="categories"
@@ -58,6 +60,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useGameStore } from '@/stores/game';
+import useQuasar from 'quasar/src/composables/use-quasar';
 
 const store = useGameStore();
 
@@ -66,4 +69,15 @@ const selection = ref('Animals');
 
 const leftDrawerOpen = ref(false);
 const cardCount = ref(12);
+
+const $q = useQuasar();
+function newGame() {
+  store.playAgain(selection.value);
+  $q.notify({
+    message: 'New game started!',
+    position: 'center',
+    color: 'positive',
+    timeout: 500,
+  });
+}
 </script>
