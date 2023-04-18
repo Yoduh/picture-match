@@ -65,6 +65,7 @@ function animationEnded() {
 .image {
   cursor: pointer;
   height: 100%;
+  min-height: 267px;
   width: 10rem;
 }
 

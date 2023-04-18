@@ -26,16 +26,17 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered overlay>
+    <q-drawer v-model="leftDrawerOpen" bordered overlay ref="drawer">
       <q-list>
         <q-item-label header> Settings </q-item-label>
         <q-item>
           <q-item-section>
-            Number of Cards: {{ cardCount }}
+            Number of Cards: {{ cardsCount }}
             <q-slider
-              v-model="cardCount"
+              v-model="cardsCount"
               :min="2"
               :max="24"
+              :step="2"
               snap
               label
               color="light-green"
@@ -43,14 +44,13 @@
           ></q-item-section>
         </q-item>
         <q-item>
-          <q-btn color="warning">Restart</q-btn>
+          <q-btn color="warning" @click="restart">Restart</q-btn>
           <div class="text-caption q-ml-md">
-            Reset current cards without shuffling
+            Reset current game (will not shuffle)
           </div>
         </q-item>
       </q-list>
     </q-drawer>
-
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -61,14 +61,19 @@
 import { ref } from 'vue';
 import { useGameStore } from '@/stores/game';
 import useQuasar from 'quasar/src/composables/use-quasar';
+import { storeToRefs } from 'pinia';
+import { onClickOutside } from '@vueuse/core';
 
 const store = useGameStore();
+
+const { cardsCount } = storeToRefs(store);
 
 const categories = ref(['Animals', 'Nature', 'Space']);
 const selection = ref('Animals');
 
 const leftDrawerOpen = ref(false);
-const cardCount = ref(12);
+const drawer = ref(null);
+onClickOutside(drawer, () => (leftDrawerOpen.value = false));
 
 const $q = useQuasar();
 function newGame() {
@@ -79,5 +84,10 @@ function newGame() {
     color: 'positive',
     timeout: 500,
   });
+}
+
+function restart() {
+  leftDrawerOpen.value = false;
+  store.resetGame();
 }
 </script>

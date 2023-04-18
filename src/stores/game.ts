@@ -5,6 +5,7 @@ export const useGameStore = defineStore('game', {
   state: () => ({
     cards: [] as Card[],
     newGameFlag: false,
+    cardsCount: 12,
   }),
   getters: {
     guessedCards: (state) => {
@@ -26,7 +27,7 @@ export const useGameStore = defineStore('game', {
   actions: {
     loadCards(cards: string[]) {
       const doubles = [];
-      for (let i = 0; i < cards.length * 2; i += 2) {
+      for (let i = 0; i < this.cardsCount; i += 2) {
         doubles.push({
           id: i,
           url: cards[i / 2],
@@ -60,6 +61,7 @@ export const useGameStore = defineStore('game', {
     resetGame() {
       this.cards.forEach((c) => {
         c.isGuessing = false;
+        c.isMatched = false;
       });
     },
     playAgain(deckSelection: string) {
