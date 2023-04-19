@@ -12,7 +12,10 @@
         />
 
         <q-toolbar-title> Picture Matching Game </q-toolbar-title>
-        <div class="text-h4 col-grow">Score: {{ store.score }}</div>
+        <div class="text-h4 col-grow">
+          Guesses: {{ guesses.incorrect + guesses.correct }}
+        </div>
+        <div class="text-h4 col-grow">Score: {{ store.score }}%</div>
         <q-btn color="positive" class="q-mr-md" size="lg" @click="newGame"
           >New Game</q-btn
         >
@@ -52,7 +55,7 @@
       </q-list>
     </q-drawer>
     <q-page-container>
-      <router-view />
+      <router-view @openSettings="leftDrawerOpen = true" />
     </q-page-container>
   </q-layout>
 </template>
@@ -66,7 +69,7 @@ import { onClickOutside } from '@vueuse/core';
 
 const store = useGameStore();
 
-const { cardsCount } = storeToRefs(store);
+const { cardsCount, guesses } = storeToRefs(store);
 
 const categories = ref(['Animals', 'Nature', 'Space']);
 const selection = ref('Animals');
@@ -82,7 +85,7 @@ function newGame() {
     message: 'New game started!',
     position: 'center',
     color: 'positive',
-    timeout: 500,
+    timeout: 500
   });
 }
 

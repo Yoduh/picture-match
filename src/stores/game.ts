@@ -6,10 +6,15 @@ export const useGameStore = defineStore('game', {
     cards: [] as Card[],
     newGameFlag: false,
     cardsCount: 12,
+    guesses: {
+      total: 0,
+      incorrect: 0,
+      correct: 0
+    }
   }),
   getters: {
-    guessedCards: (state) => {
-      return state.cards.filter((c) => c.isGuessing);
+    guessedCards: state => {
+      return state.cards.filter(c => c.isGuessing);
     },
     guessComplete(): boolean {
       return this.guessedCards.length >= 2;
@@ -21,8 +26,19 @@ export const useGameStore = defineStore('game', {
       );
     },
     score(): number {
-      return this.cards.filter((c) => c.isMatched).length / 2;
+      const validTotal = this.guesses.correct + this.guesses.incorrect;
+      if (validTotal === 0) return 100;
+      return Number(
+        (
+          (this.guesses.correct /
+            (this.guesses.correct + this.guesses.incorrect)) *
+          100
+        ).toFixed(2)
+      );
     },
+    gameWon(): boolean {
+      return this.cards.filter(c => c.isMatched).length === this.cards.length;
+    }
   },
   actions: {
     loadCards(cards: string[]) {
@@ -34,6 +50,7 @@ export const useGameStore = defineStore('game', {
           isGuessing: false,
           isMatched: false,
           matchId: i + 1,
+          clicks: 0
         });
         doubles.push({
           id: i + 1,
@@ -41,31 +58,61 @@ export const useGameStore = defineStore('game', {
           isGuessing: false,
           isMatched: false,
           matchId: i,
+          clicks: 0
         });
       }
       this.cards = shuffle(doubles);
     },
     keepCorrect() {
       const guessedCards = this.guessedCards;
-      guessedCards.forEach((c) => {
+      guessedCards.forEach(c => {
         c.isGuessing = false;
         c.isMatched = true;
       });
     },
-    reverseIncorrect() {
+    flipIncorrect() {
       const guessedCards = this.guessedCards;
-      guessedCards.forEach((c) => {
+      guessedCards.forEach(c => {
         c.isGuessing = false;
       });
     },
     resetGame() {
-      this.cards.forEach((c) => {
+      this.cards.forEach(c => {
         c.isGuessing = false;
         c.isMatched = false;
+        c.clicks = 0;
       });
+      this.guesses = {
+        total: 0,
+        incorrect: 0,
+        correct: 0
+      };
     },
-    playAgain(deckSelection: string) {
+    recordGuess() {
+      this.guesses.total++;
+      let newCards = true;
+      const guessedCards = this.cards.filter(c => c.isGuessing);
+      guessedCards.forEach(c => {
+        c.clicks++;
+        if (c.clicks > 1) newCards = false;
+      });
+
+      if (this.correctGuess) {
+        this.guesses.correct++;
+        this.keepCorrect();
+        return true;
+      } else if (!newCards) {
+        this.guesses.incorrect++;
+        return false;
+      }
+    },
+    playAgain(deckSelection?: string) {
       this.newGameFlag = true;
+      this.guesses = {
+        total: 0,
+        incorrect: 0,
+        correct: 0
+      };
       switch (deckSelection) {
         case 'animals': {
           this.loadCards(animals);
@@ -76,8 +123,8 @@ export const useGameStore = defineStore('game', {
           return;
         }
       }
-    },
-  },
+    }
+  }
 });
 
 function shuffle(array: Card[]) {

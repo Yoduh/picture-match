@@ -4,4 +4,5 @@ type Card = {
   isGuessing: boolean;
   isMatched: boolean;
   matchId: number;
+  clicks: number;
 };

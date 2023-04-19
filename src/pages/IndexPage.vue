@@ -9,17 +9,24 @@
         <Card :card="card" @flipped="cardFlipped(card)" />
       </div>
     </div>
+    <WinDialog v-model="dialog" @openSettings="$emit('openSettings')" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import Card from '@/components/Card.vue';
+import WinDialog from '@/components/WinDialog.vue';
 import { useGameStore } from '@/stores/game';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+
+defineEmits(['openSettings']);
 
 const store = useGameStore();
 
 const { cards } = storeToRefs(store);
+
+const dialog = ref(false);
 
 let reverseTimer: number | undefined = undefined;
 
@@ -28,18 +35,20 @@ const cardFlipped = (card: Card) => {
     // flip incorrect guess immediately if user does not wait for 2 second timer
     window.clearTimeout(reverseTimer);
     reverseTimer = undefined;
-    store.reverseIncorrect();
+    store.flipIncorrect();
   }
   card.isGuessing = true;
   if (store.guessComplete) {
-    if (store.correctGuess) {
-      store.keepCorrect();
-    } else {
+    const correct = store.recordGuess();
+    if (!correct) {
+      console.log('not correct');
       // flip incorrect cards after 2 seconds
       reverseTimer = window.setTimeout(() => {
-        store.reverseIncorrect();
+        store.flipIncorrect();
         reverseTimer = undefined;
       }, 2000);
+    } else if (store.gameWon) {
+      dialog.value = true;
     }
   }
 };
