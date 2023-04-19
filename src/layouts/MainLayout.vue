@@ -61,36 +61,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useGameStore } from '@/stores/game';
-import useQuasar from 'quasar/src/composables/use-quasar';
-import { storeToRefs } from 'pinia';
-import { onClickOutside } from '@vueuse/core';
+import { ref } from 'vue'
+import { useGameStore } from '@/stores/game'
+import useQuasar from 'quasar/src/composables/use-quasar'
+import { storeToRefs } from 'pinia'
+import { onClickOutside } from '@vueuse/core'
 
-const store = useGameStore();
+const store = useGameStore()
 
-const { cardsCount, guesses } = storeToRefs(store);
+const { cardsCount, guesses } = storeToRefs(store)
 
-const categories = ref(['Animals', 'Nature', 'Space']);
-const selection = ref('Animals');
+const categories = ref(['Animals', 'Nature', 'Space'])
+const selection = ref('Animals')
 
-const leftDrawerOpen = ref(false);
-const drawer = ref(null);
-onClickOutside(drawer, () => (leftDrawerOpen.value = false));
+const leftDrawerOpen = ref(false)
+const drawer = ref(null)
+onClickOutside(drawer, () => (leftDrawerOpen.value = false))
 
-const $q = useQuasar();
+const $q = useQuasar()
 function newGame() {
-  store.playAgain(selection.value);
+  store.playAgain(selection.value)
   $q.notify({
     message: 'New game started!',
     position: 'center',
     color: 'positive',
     timeout: 500
-  });
+  })
 }
 
 function restart() {
-  leftDrawerOpen.value = false;
-  store.resetGame();
+  leftDrawerOpen.value = false
+  store.resetGame()
 }
 </script>

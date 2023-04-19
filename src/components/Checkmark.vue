@@ -10,8 +10,8 @@
 
 <script setup lang="ts">
 defineProps({
-  showIcon: Boolean,
-});
+  showIcon: Boolean
+})
 </script>
 
 <style lang="scss" scoped>

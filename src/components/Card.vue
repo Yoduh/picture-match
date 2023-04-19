@@ -23,40 +23,40 @@
 </template>
 
 <script setup lang="ts">
-import type { PropType } from 'vue';
-import { ref, watch } from 'vue';
-import cardback from '@/assets/cardback.avif';
-import Checkmark from '@/components/Checkmark.vue';
-import { useGameStore } from '@/stores/game';
-import { storeToRefs } from 'pinia';
+import type { PropType } from 'vue'
+import { ref, watch } from 'vue'
+import cardback from '@/assets/cardback.avif'
+import Checkmark from '@/components/Checkmark.vue'
+import { useGameStore } from '@/stores/game'
+import { storeToRefs } from 'pinia'
 
-const store = useGameStore();
-const { newGameFlag } = storeToRefs(store);
+const store = useGameStore()
+const { newGameFlag } = storeToRefs(store)
 
 const props = defineProps({
-  card: { type: Object as PropType<Card>, required: true },
-});
+  card: { type: Object as PropType<Card>, required: true }
+})
 
-const emit = defineEmits(['flipped']);
+const emit = defineEmits(['flipped'])
 
-const flipType = ref('flip');
+const flipType = ref('flip')
 function flipImage() {
   if (!props.card.isMatched) {
-    emit('flipped');
+    emit('flipped')
   }
 }
 
-watch(newGameFlag, (newVal) => {
+watch(newGameFlag, newVal => {
   if (newVal) {
-    flipType.value = '';
+    flipType.value = ''
   } else {
-    flipType.value = 'flip';
+    flipType.value = 'flip'
   }
-});
+})
 
 function animationEnded() {
   if (newGameFlag.value) {
-    newGameFlag.value = false;
+    newGameFlag.value = false
   }
 }
 </script>

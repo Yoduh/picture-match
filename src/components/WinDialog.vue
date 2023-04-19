@@ -31,52 +31,52 @@
 </template>
 
 <script setup lang="ts">
-import { useGameStore } from '@/stores/game';
-import { useVModel } from '@vueuse/core';
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+import { useGameStore } from '@/stores/game'
+import { useVModel } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 
 const props = defineProps<{
-  modelValue: boolean;
-}>();
-const emit = defineEmits(['update:modelValue', 'openSettings']);
+  modelValue: boolean
+}>()
+const emit = defineEmits(['update:modelValue', 'openSettings'])
 
-const dialog = useVModel(props, 'modelValue', emit);
+const dialog = useVModel(props, 'modelValue', emit)
 
-const store = useGameStore();
-const { score } = storeToRefs(store);
+const store = useGameStore()
+const { score } = storeToRefs(store)
 
 const scoreBasedCongrats = computed(() => {
-  let response = '';
+  let response = ''
   if (score.value === 100 && store.cardsCount <= 4) {
-    response = 'Good job... I guess.  Maybe try again with a few more cards?';
+    response = 'Good job... I guess.  Maybe try again with a few more cards?'
   } else if (score.value === 100) {
-    response = "Unbelievable! You're an absolute genius!";
+    response = "Unbelievable! You're an absolute genius!"
   } else if (score.value >= 90) {
-    response = 'You did outstanding!';
+    response = 'You did outstanding!'
   } else if (score.value >= 80) {
-    response = 'Great job!';
+    response = 'Great job!'
   } else if (score.value >= 70) {
-    response = 'Nice!';
+    response = 'Nice!'
   } else if (score.value >= 60) {
-    response = 'Keep practicing!';
+    response = 'Keep practicing!'
   } else if (score.value >= 50) {
-    response = 'Not great... not bad';
+    response = 'Not great... not bad'
   } else if (score.value >= 40) {
-    response = 'That was a rough one';
+    response = 'That was a rough one'
   } else if (score.value >= 30) {
-    response = "I've seen better";
+    response = "I've seen better"
   } else if (score.value >= 20) {
-    response = 'Yikes';
+    response = 'Yikes'
   } else if (score.value >= 10) {
-    response = "At least it's over now";
+    response = "At least it's over now"
   } else if (score.value >= 0) {
-    response = 'I hope that was done blindfolded';
+    response = 'I hope that was done blindfolded'
   } else {
-    response = "That's... actually impressive.  Sad, but impressive";
+    response = "That's... actually impressive.  Sad, but impressive"
   }
-  return response;
-});
+  return response
+})
 </script>
 
 <style lang="scss" scoped></style>

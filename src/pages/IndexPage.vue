@@ -14,44 +14,44 @@
 </template>
 
 <script setup lang="ts">
-import Card from '@/components/Card.vue';
-import WinDialog from '@/components/WinDialog.vue';
-import { useGameStore } from '@/stores/game';
-import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import Card from '@/components/Card.vue'
+import WinDialog from '@/components/WinDialog.vue'
+import { useGameStore } from '@/stores/game'
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 
-defineEmits(['openSettings']);
+defineEmits(['openSettings'])
 
-const store = useGameStore();
+const store = useGameStore()
 
-const { cards } = storeToRefs(store);
+const { cards } = storeToRefs(store)
 
-const dialog = ref(false);
+const dialog = ref(false)
 
-let reverseTimer: number | undefined = undefined;
+let reverseTimer: number | undefined = undefined
 
 const cardFlipped = (card: Card) => {
   if (reverseTimer !== undefined) {
     // flip incorrect guess immediately if user does not wait for 2 second timer
-    window.clearTimeout(reverseTimer);
-    reverseTimer = undefined;
-    store.flipIncorrect();
+    window.clearTimeout(reverseTimer)
+    reverseTimer = undefined
+    store.flipIncorrect()
   }
-  card.isGuessing = true;
+  card.isGuessing = true
   if (store.guessComplete) {
-    const correct = store.recordGuess();
+    const correct = store.recordGuess()
     if (!correct) {
-      console.log('not correct');
+      console.log('not correct')
       // flip incorrect cards after 2 seconds
       reverseTimer = window.setTimeout(() => {
-        store.flipIncorrect();
-        reverseTimer = undefined;
-      }, 2000);
+        store.flipIncorrect()
+        reverseTimer = undefined
+      }, 2000)
     } else if (store.gameWon) {
-      dialog.value = true;
+      dialog.value = true
     }
   }
-};
+}
 </script>
 
 <style scoped>
