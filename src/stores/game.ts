@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import animals from '@/assets/animals'
+import { api } from '@/boot/axios'
 
 export const useGameStore = defineStore('game', {
   state: () => ({
@@ -10,7 +11,9 @@ export const useGameStore = defineStore('game', {
       total: 0,
       incorrect: 0,
       correct: 0
-    }
+    },
+    selectedDeck: 'Animals',
+    customDeckName: ''
   }),
   getters: {
     guessedCards: state => {
@@ -106,16 +109,55 @@ export const useGameStore = defineStore('game', {
         return false
       }
     },
-    playAgain(deckSelection?: string) {
+    playAgain(customCards?: string[]) {
       this.newGameFlag = true
       this.guesses = {
         total: 0,
         incorrect: 0,
         correct: 0
       }
-      switch (deckSelection) {
-        case 'animals': {
+      switch (this.selectedDeck) {
+        case 'Animals': {
           this.loadCards(animals)
+          return
+        }
+        case 'Space': {
+          api
+            .get(
+              `https://api.nasa.gov/planetary/apod?api_key=${
+                import.meta.env.VITE_NASA_KEY
+              }&count=${this.cardsCount}`
+            )
+            .then((res: any) => {
+              const space: string[] = res.data.map(
+                (d: { url: string }) => d.url
+              )
+              this.loadCards(space)
+            })
+          return
+        }
+        case 'Pokémon': {
+          const pokemonIds = randomIds(this.cardsCount, 151)
+          const calls = pokemonIds.map(id =>
+            api.get(`https://pokeapi.co/api/v2/pokemon/${id}`)
+          )
+          Promise.all(calls).then(results => {
+            const pokemon: string[] = results.map(
+              (res: any) => res.data.sprites.other.dream_world.front_default
+            )
+            this.loadCards(pokemon)
+          })
+          return
+        }
+        // case 'Random': {
+        //   const url =
+        //     'https://www.mediawiki.org/w/api.php?action=query&format=json&prop=imageinfo&meta=&generator=random&formatversion=2&grnnamespace=0&iiprop=url&iiurlwidth=200&origin=*'
+        //   api.get(url).then((res: any) => console.log(res.data))
+        // }
+        case 'Custom': {
+          if (customCards) {
+            this.loadCards(customCards)
+          }
           return
         }
         default: {
@@ -144,5 +186,14 @@ function shuffle(array: Card[]) {
     ]
   }
 
+  return array
+}
+
+function randomIds(idCount: number, maxId: number) {
+  const array = []
+  while (array.length < idCount) {
+    const r = Math.floor(Math.random() * maxId) + 1
+    if (array.indexOf(r) === -1) array.push(r)
+  }
   return array
 }

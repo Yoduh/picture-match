@@ -2,19 +2,10 @@
   "extends": "@quasar/app-vite/tsconfig-preset",
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": "src",
+    "jsx": "preserve",
     "typeRoots": ["./node_modules/@types", "./src/@types"],
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["./src/*"]
     }
-  },
-  "include": [
-    "src/**/*.js",
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "vite.config.ts",
-    "src/stores/index.js"
-  ]
+  }
 }

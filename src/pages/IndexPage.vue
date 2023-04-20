@@ -1,10 +1,10 @@
 <template>
   <q-page class="page flex justify-center">
-    <div class="row full-height justify-evenly items-center">
+    <div class="row full-height justify-evenly items-center q-mb-lg">
       <div
         v-for="(card, index) in cards"
         :key="index"
-        class="q-mx-sm full-height"
+        class="col-6 col-md-4 col-lg-3 co full-height"
       >
         <Card :card="card" @flipped="cardFlipped(card)" />
       </div>
@@ -41,7 +41,6 @@ const cardFlipped = (card: Card) => {
   if (store.guessComplete) {
     const correct = store.recordGuess()
     if (!correct) {
-      console.log('not correct')
       // flip incorrect cards after 2 seconds
       reverseTimer = window.setTimeout(() => {
         store.flipIncorrect()

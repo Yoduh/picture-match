@@ -1,32 +1,7 @@
 <template>
   <q-layout view="hHh Lpr lFf">
     <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
-
-        <q-toolbar-title> Picture Matching Game </q-toolbar-title>
-        <div class="text-h4 col-grow">
-          Guesses: {{ guesses.incorrect + guesses.correct }}
-        </div>
-        <div class="text-h4 col-grow">Score: {{ store.score }}%</div>
-        <q-btn color="positive" class="q-mr-md" size="lg" @click="newGame"
-          >New Game</q-btn
-        >
-        <q-select
-          v-model="selection"
-          :options="categories"
-          outlined
-          class="q-my-sm"
-          bg-color="blue-3"
-        ></q-select>
-      </q-toolbar>
+      <Toolbar @toggleDrawer="leftDrawerOpen = !leftDrawerOpen" ref="toolbar" />
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" bordered overlay ref="drawer">
@@ -47,6 +22,12 @@
           ></q-item-section>
         </q-item>
         <q-item>
+          <q-btn color="positive full-width" @click="newGame">New Game</q-btn>
+          <div class="text-caption q-ml-md">
+            Start new game using current settings
+          </div>
+        </q-item>
+        <q-item>
           <q-btn color="warning" @click="restart">Restart</q-btn>
           <div class="text-caption q-ml-md">
             Reset current game (will not shuffle)
@@ -62,25 +43,35 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import Toolbar from '@/components/Toolbar.vue'
 import { useGameStore } from '@/stores/game'
-import useQuasar from 'quasar/src/composables/use-quasar'
 import { storeToRefs } from 'pinia'
+import { useQuasar } from 'quasar'
 import { onClickOutside } from '@vueuse/core'
+import { useFetchImages } from '@/composable/fetchImages'
 
 const store = useGameStore()
-
-const { cardsCount, guesses } = storeToRefs(store)
-
-const categories = ref(['Animals', 'Nature', 'Space'])
-const selection = ref('Animals')
+const { cardsCount, selectedDeck } = storeToRefs(store)
 
 const leftDrawerOpen = ref(false)
 const drawer = ref(null)
-onClickOutside(drawer, () => (leftDrawerOpen.value = false))
+const toolbar = ref(null)
+
+onClickOutside(drawer, () => (leftDrawerOpen.value = false), {
+  ignore: [toolbar]
+})
 
 const $q = useQuasar()
-function newGame() {
-  store.playAgain(selection.value)
+
+async function newGame() {
+  leftDrawerOpen.value = false
+  if (selectedDeck.value === 'Custom') {
+    const { fetchImages, photos } = useFetchImages()
+    await fetchImages()
+    store.playAgain(photos.value)
+  } else {
+    store.playAgain()
+  }
   $q.notify({
     message: 'New game started!',
     position: 'center',
@@ -94,3 +85,9 @@ function restart() {
   store.resetGame()
 }
 </script>
+
+<style scoped>
+.q-btn {
+  max-width: 110px;
+}
+</style>

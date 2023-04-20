@@ -57,7 +57,7 @@ module.exports = configure(function (/* ctx */) {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       alias: {
         '@': path.join(__dirname, './src')
-      }
+      },
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -66,7 +66,7 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: require('dotenv').config().parsed
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

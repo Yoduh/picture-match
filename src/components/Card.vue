@@ -13,7 +13,7 @@
       <q-img
         v-else
         :src="card.url"
-        fit="contain"
+        :fit="imageFit"
         class="image"
         loading="eager"
         @click="flipImage"
@@ -24,9 +24,10 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import { ref, watch } from 'vue'
+import { ref, Ref, watch } from 'vue'
 import cardback from '@/assets/cardback.avif'
 import Checkmark from '@/components/Checkmark.vue'
+import { QImgProps } from 'quasar'
 import { useGameStore } from '@/stores/game'
 import { storeToRefs } from 'pinia'
 
@@ -46,9 +47,13 @@ function flipImage() {
   }
 }
 
+const imageFit: Ref<QImgProps['fit']> = ref('contain')
+
 watch(newGameFlag, newVal => {
   if (newVal) {
     flipType.value = ''
+    if (store.selectedDeck === 'Space') imageFit.value = 'cover'
+    else imageFit.value = 'contain'
   } else {
     flipType.value = 'flip'
   }
@@ -65,16 +70,16 @@ function animationEnded() {
 .image {
   cursor: pointer;
   height: 100%;
-  min-height: 267px;
-  width: 10rem;
+  height: 267px;
 }
 
 .image-wrapper {
   position: relative;
   transform-style: preserve-3d;
   perspective: 1000px;
-  width: 300px;
-  height: 400px;
+  height: auto !important;
+  width: auto !important;
+  // height: 290px !important;
 }
 
 .flip-enter-active {

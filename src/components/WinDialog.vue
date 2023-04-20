@@ -15,7 +15,7 @@
           flat
           label="Play Again"
           color="primary"
-          @click="store.playAgain"
+          @click="newGame"
           v-close-popup
         />
         <q-btn
@@ -35,6 +35,8 @@ import { useGameStore } from '@/stores/game'
 import { useVModel } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import { useFetchImages } from '@/composable/fetchImages'
+import { useQuasar } from 'quasar'
 
 const props = defineProps<{
   modelValue: boolean
@@ -44,7 +46,7 @@ const emit = defineEmits(['update:modelValue', 'openSettings'])
 const dialog = useVModel(props, 'modelValue', emit)
 
 const store = useGameStore()
-const { score } = storeToRefs(store)
+const { score, selectedDeck } = storeToRefs(store)
 
 const scoreBasedCongrats = computed(() => {
   let response = ''
@@ -71,12 +73,30 @@ const scoreBasedCongrats = computed(() => {
   } else if (score.value >= 10) {
     response = "At least it's over now"
   } else if (score.value >= 0) {
-    response = 'I hope that was done blindfolded'
+    response = 'I hope that was done blindfolded!'
   } else {
-    response = "That's... actually impressive.  Sad, but impressive"
+    response =
+      "That's... literally impossible.  Wait, why are you looking into the code???"
   }
   return response
 })
+
+const $q = useQuasar()
+async function newGame() {
+  if (selectedDeck.value === 'Custom') {
+    const { fetchImages, photos } = useFetchImages()
+    await fetchImages()
+    store.playAgain(photos.value)
+  } else {
+    store.playAgain()
+  }
+  $q.notify({
+    message: 'New game started!',
+    position: 'center',
+    color: 'positive',
+    timeout: 500
+  })
+}
 </script>
 
 <style lang="scss" scoped></style>
